@@ -1,0 +1,20 @@
+Initial commit
+# Please enter the commit message for your changes. Lines starting
+# with '#' will be ignored, and an empty message aborts the commit.
+#
+# On branch master
+#
+# Initial commit
+#
+# Changes to be committed:
+#	new file:   .gitignore
+#	new file:   Makefile
+#	new file:   build/app
+#	new file:   out/Structures.o
+#	new file:   out/main.o
+#	new file:   res/Main.class
+#	new file:   res/main.java
+#	new file:   src/Structures.cpp
+#	new file:   src/Structures.h
+#	new file:   src/main.cpp
+#
