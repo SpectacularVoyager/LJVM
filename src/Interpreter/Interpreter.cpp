@@ -10,7 +10,7 @@
 #include "dlfcn.h"
 typedef void (*dllfunc)();
 
-#define PRINTF printf
+#define PRINTF 
 dllfunc getFunction(void* handler,std::string symbol){
 	char* error;
 	auto* object = (long*)dlsym(handler, symbol.c_str());
@@ -65,9 +65,9 @@ void run(ClassFile& clazz){
 			case OPCODE::ISTORE:
 				op1=frame.popInt();
 				op2=data[pc++];
-				if(op2>=8) PANIC("CANNOT HANDLE MORE THAN 8 LOCAL VARIABLES GOT:"+std::to_string(op1));
-				frame.LocalVariableArray[op2]=op1;
 				PRINTF("STORING %d IN REG[%d]\n",op1,op2);
+				if(op2>=8) PANIC("CANNOT HANDLE MORE THAN 8 LOCAL VARIABLES GOT:"+std::to_string(op1));
+				frame.setRegisterInt(op2,op1);
 				break;
 			case OPCODE::ISTORE_N:
 			case OPCODE::ISTORE_N+1:
@@ -76,13 +76,13 @@ void run(ClassFile& clazz){
 				//FROM STACK TOP
 				_data=frame.popInt();
 				PRINTF("STORING [%d] IN REG[%d]\n",(int)_data,opcode-OPCODE::ISTORE_N);
-				frame.LocalVariableArray[opcode-OPCODE::ISTORE_N]=_data;
+				frame.setRegisterInt(opcode-OPCODE::ISTORE_N,_data);
 				break;
 			case OPCODE::ILOAD:
 				op2=data[pc++];
-				op1=frame.LocalVariableArray[op2];
+				op1=frame.getRegisterInt(op2);
 				if(op2>=8) PANIC("CANNOT HANDLE MORE THAN 8 LOCAL VARIABLES GOT:"+std::to_string(op1));
-				frame.pushInt(op2);
+				frame.pushInt(op1);
 				PRINTF("LOADING %d FROM REG[%d]\n",op2,op1);
 				break;
 			case OPCODE::ILOAD_N:
@@ -90,7 +90,7 @@ void run(ClassFile& clazz){
 			case OPCODE::ILOAD_N+2:
 			case OPCODE::ILOAD_N+3:
 				//FROM STACK TOP
-				_data=frame.LocalVariableArray[opcode-OPCODE::ILOAD_N];
+				_data=frame.getRegisterInt(opcode-OPCODE::ILOAD_N);
 				frame.pushInt(_data);
 				PRINTF("LOADING [%d] FROM REG[%d]\n",(int)_data,opcode-OPCODE::ILOAD_N);
 				break;
@@ -145,9 +145,10 @@ void run(ClassFile& clazz){
 			case OPCODE::IINC:
 				op1=data[pc++];
 				op2=data[pc++];
-				if(op1>=8) PANIC("CANNOT HANDLE MORE THAN 8 LOCAL VARIABLES GOT:"+std::to_string(op1));
-				frame.LocalVariableArray[op1]+=op2;
 				PRINTF("INCREMENTING LOCAL[%d] BY %d\n",op1,op2);
+				if(op1>=8) PANIC("CANNOT HANDLE MORE THAN 8 LOCAL VARIABLES GOT:"+std::to_string(op1));
+				//frame.LocalVariableArray[op1]+=op2;
+				frame.setRegisterInt(op1,frame.getRegisterInt(op1)+op2);
 				//std::cout<<"LOADING:\t"<<*clazz.constants[op1];
 				break;
 			case OPCODE::INVOKE_STATIC:
@@ -155,8 +156,13 @@ void run(ClassFile& clazz){
 				method=((MethodRef*)(clazz.constants[_data]));
 				class_name="main";
 				name=(**(method->name)).getName();
-				func=getFunction(handler, "Java_"+class_name+"_"+name);
-				func();
+				if(name=="printInt"){
+					printf("%d\n",frame.popInt());
+				}else{
+					//FIX BUG WHERE STACK IS NOT POPPED CORRECTLY
+					func=getFunction(handler, "Java_"+class_name+"_"+name);
+					func();
+				}
 				pc+=2;
 				break;
 			default:
