@@ -12,7 +12,12 @@ class Attribute{
 class IgnoredAttribute : public Attribute{
 	public:
 		std::vector<unsigned char> bytes;
-		IgnoredAttribute(UTF8String** str,std::ifstream& file);
+		IgnoredAttribute(ClassFile& clazz,UTF8String** str,std::ifstream& file);
+};
+class SourceFileAttribute : public Attribute{
+	public:
+		UTF8String** tag;
+		SourceFileAttribute(ClassFile& clazz,UTF8String** str,std::ifstream& file);
 };
 
 namespace Attributes{

@@ -6,11 +6,11 @@
 #include "Attributes/Attribute.h"
 #include "iostream"
 
-#define readAll(file) for(int i=0,count=readU16(file);i<count;i++)
+#define readAll(file) for(unsigned int i=0,count=readU16(file);i<count;i++)
 
-Constant* ClassFile::get(std::ifstream& file){
+Constant** ClassFile::get(std::ifstream& file){
 	int idx=readU16(file)-1;
-	return constants[idx];
+	return &constants[idx];
 }
 
 int ClassFile::parse(std::ifstream& file){
@@ -21,7 +21,7 @@ int ClassFile::parse(std::ifstream& file){
 	
 	minor=readU16(file);
 	major=readU16(file);
-	int n_consts=readU16(file)-1;
+	unsigned int n_consts=readU16(file)-1;
 	constants.resize(n_consts);
 	for(size_t i=0;i<n_consts;i++){
 		Constant* c=Constants::getConstant(*this, file);
@@ -29,7 +29,7 @@ int ClassFile::parse(std::ifstream& file){
 	}
 	int i=0;
 	for(auto x:constants){
-		std::cout<<i++<<" ( "<<*x<<" )\n";	
+		//std::cout<<i++<<" ( "<<*x<<" )\n";	
 	}
 
 	access=readU16(file);
@@ -47,7 +47,8 @@ int ClassFile::parse(std::ifstream& file){
 	}
 	readAll(file){
 		Attribute* a=Attributes::getAttribute(*this,file);
-		attributes[a->getName()]=a;
+		attributes.push_back(a);
+		//attributes[a->getName()]=a;
 	}
 
 	// for(auto x:constants){
@@ -61,7 +62,7 @@ ClassFile::~ClassFile(){
 		delete x;
 	}
 	for(auto x:attributes){
-		delete x.second;
+		delete x;
 	}
 }
 

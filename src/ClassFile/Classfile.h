@@ -26,9 +26,9 @@ class ClassFile{
 		std::vector<int> interfaces;
 		std::vector<Field> fields;
 		std::vector<Method> methods;
-		std::unordered_map<std::string,Attribute*> attributes;
+		std::vector<Attribute*> attributes;
 
 		int parse(std::ifstream& file);
-		Constant* get(std::ifstream& file);
+		Constant** get(std::ifstream& file);
 		~ClassFile();
 };
