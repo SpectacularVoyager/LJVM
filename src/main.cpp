@@ -4,6 +4,7 @@
 #include "Utils/Utils.h"
 
 #include "ClassFile/Classfile.h"
+#include "Interpreter/Interpreter.h"
 using std::ios;
 
 int main(int argc,char** argv){
@@ -16,4 +17,6 @@ int main(int argc,char** argv){
 	if(!clazz.parse(in)){
 		PANIC("INVALID CLASS FILE\n");
 	}
+	run(clazz);
+
 }

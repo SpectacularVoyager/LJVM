@@ -1,16 +1,23 @@
 #pragma once
 
-#include "Constants/Constants.h"
 #include <unordered_map>
+#include "fstream"
+#include "Attributes/Attribute.h"
+class ClassFile;
+class NameAndType;
+class UTF8String;
+
 
 class ClassMember{
 	public:
 		int access;	
-		NameAndType** name;
+		UTF8String** name;
 		UTF8String** desc;
 		std::unordered_map<std::string,Attribute*> attributes;
 		ClassMember(ClassFile& clazz,std::ifstream& file);
 		~ClassMember();
+		Attribute* getAttribute(std::string name);
+		UTF8String& getName();
 };
 
 class Field :public ClassMember{

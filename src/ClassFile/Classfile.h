@@ -2,13 +2,12 @@
 #include <fstream>
 #include <unordered_map>
 #include <vector>
+#include "ClassMembers/ClassMember.h"
 
 class ClassInfo;
 class Constant;
 class Attribute;
 
-class Field;
-class Method;
 
 struct ACCESS{
 	

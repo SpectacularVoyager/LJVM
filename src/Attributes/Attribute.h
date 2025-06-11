@@ -1,8 +1,9 @@
 #pragma once
 
 #include <fstream>
-#include "Constants/Constants.h"
+#include <vector>
 class ClassFile;
+class UTF8String;
 class Attribute{
 	public:
 		UTF8String** name;
@@ -38,7 +39,10 @@ class CodeAttribute : public Attribute{
 		CodeAttribute(ClassFile& clazz,UTF8String** str,std::ifstream& file);
 		~CodeAttribute();
 };
-
+//TODO
+class LineNumberAttribute{
+	
+};
 namespace Attributes{
 	Attribute* getAttribute(ClassFile& clazz,std::ifstream& file);
 };

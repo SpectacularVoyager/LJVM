@@ -1,2 +1,2 @@
 CompileFlags:
-  Add: [-Wall, -Wextra,-I/home/ankush/Ankush/LJVM/src]
+  Add: [-Wall, -Wextra,-I/home/ankush/Ankush/LJVM/src,-I/lib/jvm/java-1.21.0-openjdk-amd64/include,-I/lib/jvm/java-1.21.0-openjdk-amd64/include/linux]

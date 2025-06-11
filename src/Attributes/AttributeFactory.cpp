@@ -13,6 +13,8 @@ Attribute* Attributes::getAttribute(ClassFile& clazz,std::ifstream& file){
 		attr= new CodeAttribute(clazz,a,file);
 	}else if((*a)->str=="SourceFile"){
 		attr= new SourceFileAttribute(clazz,a,file);
+	}else if((*a)->str=="StackMapTable"){
+		attr= new IgnoredAttribute(clazz,a,file);
 	}else if((*a)->str=="LineNumberTable"){
 		attr= new IgnoredAttribute(clazz,a,file);
 	}else{

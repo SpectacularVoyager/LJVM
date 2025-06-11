@@ -25,6 +25,8 @@ class NameAndType : public Constant {
 		UTF8String** type;
 		NameAndType(ClassFile& clazz,std::ifstream& file);
 		virtual void print(std::ostream& os) const override;
+		std::string getName();
+		std::string getType();
 };
 class ClassInfo : public Constant{
 	public:
@@ -32,12 +34,29 @@ class ClassInfo : public Constant{
 		ClassInfo(ClassFile& clazz,std::ifstream& file);
 		virtual void print(std::ostream& os) const override;
 };
-class MethodRef : public Constant{
+class ConstantString : public Constant{
+	public:
+		UTF8String** str;
+		ConstantString(ClassFile& clazz,std::ifstream& file);
+		virtual void print(std::ostream& os) const override;
+};
+
+
+class GenericRef : public Constant{
 	public:
 		ClassInfo** clazz;
 		NameAndType** name;
-		MethodRef(ClassFile& clazz,std::ifstream& file);
+		GenericRef(ClassFile& clazz,std::ifstream& file);
 		virtual void print(std::ostream& os) const override;
+};
+
+class MethodRef: public GenericRef{
+	public:
+		using GenericRef::GenericRef;
+};
+class FieldRef: public GenericRef{
+	public:
+		using GenericRef::GenericRef;
 };
 namespace Constants{
 	Constant* getConstant(ClassFile& clazz,std::ifstream& file);

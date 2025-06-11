@@ -1,7 +1,7 @@
 #include "Constants.h"
 #include "Utils/Utils.h"
 
-MethodRef::MethodRef(ClassFile& clazz,std::ifstream& file){
+GenericRef::GenericRef(ClassFile& clazz,std::ifstream& file){
 	// printf("METHOD REF\n");
 	this->clazz=(ClassInfo**)&clazz.constants[readU16(file)-1];
 	this->name=(NameAndType**)&clazz.constants[readU16(file)-1];
@@ -24,13 +24,25 @@ UTF8String::UTF8String(ClassFile& clazz,std::ifstream& file){
 	str.resize(len);
 	file.read(&str[0],len);
 }
+ConstantString::ConstantString(ClassFile& clazz,std::ifstream& file){
+	this->str=(UTF8String**)&clazz.constants[readU16(file)-1];
+}
 
 std::ostream& operator<<(std::ostream& os, const Constant& val){
 	val.print(os);
 	return os;
 }
+std::string NameAndType::getName(){
+	return (*name)->str;
+}
+std::string NameAndType::getType(){
+	return (*type)->str;
+}
 
 
+void ConstantString::print(std::ostream& os) const{
+	os<<"\""<<**str<<"\"";
+}
 void UTF8String::print(std::ostream& os) const{
 	os<<str;
 }
@@ -40,6 +52,6 @@ void NameAndType::print(std::ostream& os) const{
 void ClassInfo::print(std::ostream& os) const{
 	os<<"Class("<<**name<<")";
 }
-void MethodRef::print(std::ostream& os) const{
+void GenericRef::print(std::ostream& os) const{
 	os<<"MethodRef("<<**((*clazz)->name)<<","<<**name<<")";
 }

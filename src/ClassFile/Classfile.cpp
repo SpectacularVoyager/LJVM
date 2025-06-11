@@ -29,8 +29,9 @@ int ClassFile::parse(std::ifstream& file){
 	}
 	int i=0;
 	for(auto x:constants){
-		//std::cout<<i++<<" ( "<<*x<<" )\n";	
+		std::cout<<i++<<" ( "<<*x<<" )\n";	
 	}
+	std::cout<<"\n\n";
 
 	access=readU16(file);
 	clazz=(ClassInfo*)constants[readU16(file)-1];
@@ -41,20 +42,21 @@ int ClassFile::parse(std::ifstream& file){
 	}
 	readAll(file){
 		Field f(*this,file);
+		fields.push_back(f);
 	}
 	readAll(file){
 		Method m(*this,file);
+		//std::cout<<m.getName()<<std::endl;
+		methods.push_back(m);
 	}
 	readAll(file){
 		Attribute* a=Attributes::getAttribute(*this,file);
 		attributes.push_back(a);
-		//attributes[a->getName()]=a;
 	}
 
 	// for(auto x:constants){
 	// 	std::cout<<*x<<"\n";
 	// }
-
 	return 1;
 }
 ClassFile::~ClassFile(){

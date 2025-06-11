@@ -7,6 +7,9 @@ Constant* Constants::getConstant(ClassFile& clazz,std::ifstream& file){
 		case Constants::METHOD_REF:
 			c = new MethodRef(clazz,file);
 			break;
+		case Constants::FIELD_REF:
+			c = new FieldRef(clazz,file);
+			break;
 		case Constants::CLASS_INFO:
 			c = new ClassInfo(clazz,file);
 			break;
@@ -15,6 +18,9 @@ Constant* Constants::getConstant(ClassFile& clazz,std::ifstream& file){
 			break;
 		case Constants::UTF8_STRING:
 			c = new UTF8String(clazz,file);
+			break;
+		case Constants::CONSTANT_STRING:
+			c = new ConstantString(clazz,file);
 			break;
 		default:
 			PANIC("INVALID TAG:\t"+std::to_string(tag));
