@@ -19,6 +19,25 @@ class SourceFileAttribute : public Attribute{
 		UTF8String** tag;
 		SourceFileAttribute(ClassFile& clazz,UTF8String** str,std::ifstream& file);
 };
+class ExceptionTable{
+	public:
+		unsigned int startPC;
+		unsigned int endPC;
+		unsigned int handlerPC;
+		unsigned int catchType;
+		ExceptionTable(std::ifstream& file);
+};
+
+class CodeAttribute : public Attribute{
+	public:
+		int maxStacks;
+		int maxLocals;
+		std::vector<unsigned char> code;
+		std::vector<ExceptionTable> exceptions;
+		std::vector<Attribute*> attributes;
+		CodeAttribute(ClassFile& clazz,UTF8String** str,std::ifstream& file);
+		~CodeAttribute();
+};
 
 namespace Attributes{
 	Attribute* getAttribute(ClassFile& clazz,std::ifstream& file);
