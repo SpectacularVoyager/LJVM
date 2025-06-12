@@ -9,9 +9,9 @@
 
 #define readAll(file) for(unsigned int i=0,count=readU16(file);i<count;i++)
 
-Constant** ClassFile::get(std::ifstream& file){
+Constant* ClassFile::get(std::ifstream& file){
 	int idx=readU16(file)-1;
-	return &constants[idx];
+	return constants[idx];
 }
 
 int ClassFile::parse(std::ifstream& file){
@@ -51,13 +51,13 @@ int ClassFile::parse(std::ifstream& file){
 		readU16(file);
 	}
 	readAll(file){
-		Field f(*this,file);
-		fields.push_back(f);
+		Field* f=new Field(*this,file);
+		fields[f->name->str]=f;
 	}
 	readAll(file){
-		Method m(*this,file);
+		Method* m=new Method(*this,file);
 		//std::cout<<m.getName()<<std::endl;
-		methods.push_back(m);
+		methods[m->name->str]=m;
 	}
 	readAll(file){
 		Attribute* a=Attributes::getAttribute(*this,file);
@@ -65,18 +65,19 @@ int ClassFile::parse(std::ifstream& file){
 	}
 
 	for(auto x:fields){
-		std::cout<<x<<"\n";
+		// std::cout<<x.second<<"\n";
 	}
-	for(auto x:methods){
-		auto p=getArgs(x.desc->str);
-		std::cout<<x<<"\t[";
-		for(auto d:p.first){
-			std::cout<<d<<",";
-		}
-		std::cout<<"] ->\t"<<p.second<<"\n";
+	for(auto _x:methods){
+		// auto x=_x.second;
+		// auto p=getArgs(x->desc->str);
+		// std::cout<<*x<<"\t[";
+		// for(auto d:p.first){
+		// 	//std::cout<<d<<",";
+		// }
+		// std::cout<<"] ->\t"<<p.second<<"\n";
 	}
 	for(auto x:attributes){
-		std::cout<<*x<<"\n";
+		//std::cout<<*x<<"\n";
 	}
 	for(auto x:constants){
 		//std::cout<<*x<<"\n";
@@ -93,3 +94,8 @@ ClassFile::~ClassFile(){
 }
 
 
+Method* ClassFile::getMethod(std::string name)const{
+	auto x=methods.find(name);
+	if(x==methods.end())return NULL;
+	return x->second;
+}

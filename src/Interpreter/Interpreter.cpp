@@ -2,6 +2,7 @@
 #include "Attributes/Attribute.h"
 #include "Constants/Constants.h"
 #include "Utils/Utils.h"
+#include <iostream>
 #include <stack>
 #include <string>
 #include <vector>
@@ -32,13 +33,12 @@ void run(ClassFile& clazz){
 	dllfunc func;
 
 	std::vector<unsigned char> data;
-	for(auto x:clazz.methods){
-		if(x.getName().str=="main"){
-			auto code = (CodeAttribute*)x.getAttribute("Code");
-			if(code==NULL)PANIC("NO MAIN METHOD FOUND");
-			data=code->code;
-		}
-	}
+
+	std::string __MAIN="main";
+	auto code = (CodeAttribute*)clazz.getMethod(__MAIN)->getAttribute("Code");
+	if(code==NULL)PANIC("NO CODE FOUND");
+	data=code->code;
+
 	hexdump(data);
 	int pc=0;
 	std::stack<StackFrame> frames;
@@ -48,6 +48,7 @@ void run(ClassFile& clazz){
 	std::string class_name;
 	std::string name;
 
+	std::string method_desc;
 	int op1,op2;
 	while(pc<data.size()){
 		int opcode=data[pc++];
@@ -133,7 +134,7 @@ void run(ClassFile& clazz){
 				break;
 			case OPCODE::LDC:
 				op1=data[pc++]-1;
-				frame.pushInt(op1);
+				frame.pushGeneric(OPERANDS::STRING,op1);
 				//std::cout<<"LOADING:\t"<<*clazz.constants[op1];
 				break;
 			case OPCODE::IADD:
@@ -157,6 +158,7 @@ void run(ClassFile& clazz){
 				method=cast<MethodRef>(clazz.constants[_data]);
 				class_name=*method->clazz->name;
 				name=method->name->getName();
+				method_desc=method->name->getType();
 				if(name=="printInt"){
 					printf("%d\n",frame.popInt());
 				}else{
@@ -164,6 +166,10 @@ void run(ClassFile& clazz){
 					// for(auto x:getArgs(method->)){
 					//
 					// }
+					for(auto x:getArgs(method_desc).first){
+						frame.popGeneric();
+						//std::cout<<"ARG:\t"<<x<<"\n";
+					}
 					func=getFunction(handler, "Java_"+class_name+"_"+name);
 					func();
 				}

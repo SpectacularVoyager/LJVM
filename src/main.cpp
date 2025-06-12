@@ -17,6 +17,8 @@ int main(int argc,char** argv){
 	if(!clazz.parse(in)){
 		PANIC("INVALID CLASS FILE\n");
 	}
-	run(clazz);
+	VirtualMachine machine(clazz);
+	machine.runMain();
+	//run(clazz);
 
 }
