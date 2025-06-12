@@ -1,5 +1,7 @@
+#include "ClassMembers/ClassMember.h"
 #include "Interpreter.h"
 #include "Interpreter/Opcode.h"
+#include "Constants/Constants.h"
 #include <iostream>
 #include <string>
 
@@ -61,9 +63,18 @@ void VirtualMachine::runMain(){
 #define COLOR_CONST YEL
 #define COLOR_REG GRN
 
+//TODO FIX
 inline void VirtualMachine::invokeStatic(StackFrame& frame,std::vector<unsigned char>& data,int){
-	readShort(data);
-	printf("%d\n",frame.popInt());
+	int index=readShort(data)-1;
+	MethodRef* method=cast<MethodRef>(clazz.constants[index]);
+	std::string clazz_name=method->clazz->getName();
+	std::string method_name=method->name->getName();
+	std::string name="Java_"+clazz_name+"_"+method_name;
+	if(method_name=="printInt" && clazz_name == "main"){
+		printf("%d\n",frame.popInt());
+	}else{
+		std::cout<<name<<"\n";
+	}
 }
 //TODO FIX
 inline void VirtualMachine::LDC(StackFrame& frame,std::vector<unsigned char>& data,int){

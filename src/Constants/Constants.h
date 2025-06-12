@@ -43,6 +43,9 @@ class ClassInfo : public Constant{
 		ClassInfo(ClassFile& clazz,std::ifstream& file);
 		virtual void print(std::ostream& os) const override;
 		virtual void resolve(ClassFile& clazz) override; 
+		std::string getName(){
+			return (std::string)*name;
+		}
 };
 class ConstantString : public Constant{
 	int str_index;
