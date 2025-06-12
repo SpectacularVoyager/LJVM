@@ -27,20 +27,20 @@ Attribute* Attributes::getAttribute(ClassFile& clazz,std::ifstream& file){
 std::string Attribute::getName(){
 	return (std::string)name;
 }
-IgnoredAttribute::IgnoredAttribute(ClassFile& clazz,UTF8String& str,std::ifstream& file):Attribute(str){
+IgnoredAttribute::IgnoredAttribute(ClassFile&,UTF8String& str,std::ifstream& file):Attribute(str){
 	std::cout<<"IGNORED("<<str<<")\n";
 	unsigned int len=readU32(file);
 	bytes.resize(len);
 	file.read((char*)&bytes[0],len);
 }
 SourceFileAttribute::SourceFileAttribute(ClassFile& clazz,UTF8String& str,std::ifstream& file):Attribute(str){
-	volatile unsigned int len=readU32(file);
+	volatile unsigned int _=readU32(file);
 	//tag=((UTF8String**)clazz.get(file));
 	tag=cast<UTF8String>(clazz.constants[readU16(file)-1]);
 }
 
 CodeAttribute::CodeAttribute(ClassFile& clazz,UTF8String& str,std::ifstream& file):Attribute(str){
-	volatile unsigned int len=readU32(file);
+	volatile unsigned int _=readU32(file);
 	maxStacks=readU16(file);
 	maxLocals=readU16(file);
 	unsigned int codelen=readU32(file);
