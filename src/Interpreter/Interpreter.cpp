@@ -105,7 +105,7 @@ void run(ClassFile& clazz){
 				frame.pushInt((int)opcode-(int)OPCODE::PUSH_INT_CONST);
 				break;
 			case OPCODE::IF_CMP_GE:
-				_data=(data[pc]<<8)|(data[pc+1]);//ARG1
+				_data=COMBINE_BYTE(data[pc], data[pc+1]);
 				op2=frame.popInt();
 				op1=frame.popInt();
 				PRINTF("CHECK [%d] >= [%d]\t",op1,op2);
@@ -118,7 +118,7 @@ void run(ClassFile& clazz){
 				}
 				break;
 			case OPCODE::GOTO:
-				_data=(data[pc]<<8)|(data[pc+1]);//ARG1
+				_data=COMBINE_BYTE(data[pc], data[pc+1]);
 				//pc+=2;
 
 				pc+=(short)_data-1;
@@ -152,16 +152,17 @@ void run(ClassFile& clazz){
 				//std::cout<<"LOADING:\t"<<*clazz.constants[op1];
 				break;
 			case OPCODE::INVOKE_STATIC:
-				_data=(data[pc]<<8)|(data[pc+1])-1;//ARG1
+				_data=COMBINE_BYTE(data[pc], data[pc+1])-1;
 				method=((MethodRef*)(clazz.constants[_data]));
-				class_name="main";
-				name=(**(method->name)).getName();
+				class_name=*method->clazz->name;
+				name=method->name->getName();
 				if(name=="printInt"){
 					printf("%d\n",frame.popInt());
 				}else{
 					//FIX BUG WHERE STACK IS NOT POPPED CORRECTLY
 					func=getFunction(handler, "Java_"+class_name+"_"+name);
 					func();
+					frame.popInt();
 				}
 				pc+=2;
 				break;

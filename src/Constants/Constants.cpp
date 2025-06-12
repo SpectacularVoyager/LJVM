@@ -1,22 +1,78 @@
 #include "Constants.h"
+
 #include "Utils/Utils.h"
+#include <map>
+#include <string>
+#include <typeinfo>
+
+//template <typename T>
+// T* cast(Constant* c){
+// #define IFCHECK(CLAZZ,TYPE) \
+// 	if(typeid(T)==typeid(CLAZZ)){		\
+// 		if(c->tag!=TYPE)PANIC("EXPECTED " #TYPE " GOT:"+std::to_string(c->tag));\
+// 	}
+// 	IFCHECK(ClassInfo,Constants::CLASS_INFO)
+// 	else IFCHECK(MethodRef, Constants::METHOD_REF)
+// 	else IFCHECK(FieldRef, Constants::FIELD_REF)
+// 	else IFCHECK(UTF8String, Constants::UTF8_STRING)
+// 	else IFCHECK(ConstantString, Constants::CONSTANT_STRING)
+// 	else IFCHECK(NameAndType, Constants::NAME_AND_TYPE)
+// 	else PANIC("INVALID TYPE:\t"+std::to_string(c->tag));
+// 	return (T*)c;
+// #undef IFCHECK
+// }
+template <typename T>
+T* cast(Constant* c){
+#define IFCHECK(CLAZZ,TYPE) \
+	if(typeid(T)==typeid(CLAZZ)){		\
+		if(c->tag!=TYPE)PANIC("EXPECTED " #TYPE " GOT:"+std::to_string(c->tag));\
+	}
+#define CASE(CLAZZ,TYPE) case TYPE:\
+	if(typeid(T)==typeid(CLAZZ)){		\
+		if(c->tag!=TYPE)PANIC("EXPECTED " #TYPE " GOT:"+std::to_string(c->tag));\
+	}\
+	break
+
+	switch(c->tag){
+		CASE(ClassInfo,Constants::CLASS_INFO);
+		CASE(MethodRef, Constants::METHOD_REF);
+		CASE(FieldRef, Constants::FIELD_REF);
+		CASE(UTF8String, Constants::UTF8_STRING);
+		CASE(ConstantString, Constants::CONSTANT_STRING);
+		CASE(NameAndType, Constants::NAME_AND_TYPE);
+		default:
+			PANIC("INVALID TYPE:\t"+std::to_string(c->tag));
+	}
+	return (T*)c;
+#undef CASE
+}
+void NameAndType::resolve(ClassFile& clazz) {
+	name=cast<UTF8String>(clazz.constants[name_index]);
+	type=cast<UTF8String>(clazz.constants[type_index]);
+}
+void GenericRef::resolve(ClassFile& clazz) {
+	name=cast<NameAndType>(clazz.constants[name_index]);
+	this->clazz=cast<ClassInfo>(clazz.constants[clazz_index]);
+}
+void ClassInfo::resolve(ClassFile& clazz) {
+	name=cast<UTF8String>(clazz.constants[name_index]);
+}
+void ConstantString::resolve(ClassFile& clazz) {
+	str=cast<UTF8String>(clazz.constants[str_index]);
+}
 
 GenericRef::GenericRef(ClassFile& clazz,std::ifstream& file){
 	// printf("METHOD REF\n");
-	this->clazz=(ClassInfo**)&clazz.constants[readU16(file)-1];
-	this->name=(NameAndType**)&clazz.constants[readU16(file)-1];
+	clazz_index=readU16(file)-1;
+	name_index=readU16(file)-1;
 }
-
 ClassInfo::ClassInfo(ClassFile& clazz,std::ifstream& file){
-	// printf("CLASS INFO\n");
-	this->name=(NameAndType**)&clazz.constants[readU16(file)-1];
+	this->name_index=readU16(file)-1;
 }
 NameAndType::NameAndType(ClassFile& clazz,std::ifstream& file){
 	// printf("NAME AND TYPE\n");
-	int i_name=readU16(file)-1;
-	int i_type=readU16(file)-1;
-	this->name=(UTF8String**)&clazz.constants[i_name];
-	this->type=(UTF8String**)&clazz.constants[i_type];
+	name_index=readU16(file)-1;
+	type_index=readU16(file)-1;
 }
 UTF8String::UTF8String(ClassFile& clazz,std::ifstream& file){
 	// printf("UTF8 STRING\n");
@@ -25,7 +81,7 @@ UTF8String::UTF8String(ClassFile& clazz,std::ifstream& file){
 	file.read(&str[0],len);
 }
 ConstantString::ConstantString(ClassFile& clazz,std::ifstream& file){
-	this->str=(UTF8String**)&clazz.constants[readU16(file)-1];
+	str_index=readU16(file)-1;
 }
 
 std::ostream& operator<<(std::ostream& os, const Constant& val){
@@ -33,25 +89,25 @@ std::ostream& operator<<(std::ostream& os, const Constant& val){
 	return os;
 }
 std::string NameAndType::getName(){
-	return (*name)->str;
+	return name->str;
 }
 std::string NameAndType::getType(){
-	return (*type)->str;
+	return type->str;
 }
 
 
 void ConstantString::print(std::ostream& os) const{
-	os<<"\""<<**str<<"\"";
+	os<<"\""<<*str<<"\"";
 }
 void UTF8String::print(std::ostream& os) const{
 	os<<str;
 }
 void NameAndType::print(std::ostream& os) const{
-	os<<"("<<**name<<","<<**type<<")";
+	os<<"("<<*name<<","<<*type<<")";
 }
 void ClassInfo::print(std::ostream& os) const{
-	os<<"Class("<<**name<<")";
+	os<<"Class("<<*name<<")";
 }
 void GenericRef::print(std::ostream& os) const{
-	os<<"MethodRef("<<**((*clazz)->name)<<","<<**name<<")";
+	os<<"MethodRef("<<*(clazz->name)<<","<<*name<<")";
 }

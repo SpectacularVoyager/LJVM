@@ -29,7 +29,7 @@ inline uint8_t readU8(std::istream& file){
 	file.read((char*)&u8,1);
 	return u8;
 }
-
+#define COMBINE_BYTE(a,b) (((a)<<8)|(b))
 [[noreturn]] void PANIC_FUNC(std::string str,std::string file,int line);
 
 void hexdump(std::vector<unsigned char>& vec,int d=30);

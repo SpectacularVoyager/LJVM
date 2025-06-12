@@ -29,6 +29,15 @@ int ClassFile::parse(std::ifstream& file){
 	}
 	int i=0;
 	for(auto x:constants){
+		//std::cout<<i++<<"\t"<<x->tag<<"\n";
+	}
+	i=0;
+	for(auto x:constants){
+		//std::cout<<x->tag<<"\n";
+		x->resolve(*this);
+	}
+	i=0;
+	for(auto x:constants){
 		std::cout<<i++<<" ( "<<*x<<" )\n";	
 	}
 	std::cout<<"\n\n";
