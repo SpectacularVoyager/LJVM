@@ -5,40 +5,41 @@
 #include "Constants/Constants.h"
 
 Attribute* Attributes::getAttribute(ClassFile& clazz,std::ifstream& file){
-	auto a=(UTF8String**)&clazz.constants[readU16(file)-1];
-	//std::cout<<"Attribute("<<(*a)->str<<")\n";
+	//auto a=(UTF8String**)&clazz.constants[readU16(file)-1];
+	UTF8String& a=*cast<UTF8String>(clazz.constants[readU16(file)-1]);
+	//std::cout<<"Attribute("<<a<<")\n";
 
 	Attribute* attr;
-	if((*a)->str=="Code"){
+	if((std::string)a=="Code"){
 		attr= new CodeAttribute(clazz,a,file);
-	}else if((*a)->str=="SourceFile"){
+	}else if((std::string)a=="SourceFile"){
 		attr= new SourceFileAttribute(clazz,a,file);
-	}else if((*a)->str=="StackMapTable"){
+	}else if((std::string)a=="StackMapTable"){
 		attr= new IgnoredAttribute(clazz,a,file);
-	}else if((*a)->str=="LineNumberTable"){
+	}else if((std::string)a=="LineNumberTable"){
 		attr= new IgnoredAttribute(clazz,a,file);
 	}else{
-		PANIC("UNIMPLEMENTED ATTRIBUTE:"+(*a)->str);
+		PANIC("UNIMPLEMENTED ATTRIBUTE:"+(std::string)a);
 	}
-	attr->name=a;
 	return attr;
 }
 
 std::string Attribute::getName(){
-	return (*name)->str;
+	return (std::string)name;
 }
-IgnoredAttribute::IgnoredAttribute(ClassFile& clazz,UTF8String** str,std::ifstream& file):Attribute(str){
-	std::cout<<"IGNORED("<<(*str)->str<<")\n";
+IgnoredAttribute::IgnoredAttribute(ClassFile& clazz,UTF8String& str,std::ifstream& file):Attribute(str){
+	std::cout<<"IGNORED("<<str<<")\n";
 	unsigned int len=readU32(file);
 	bytes.resize(len);
 	file.read((char*)&bytes[0],len);
 }
-SourceFileAttribute::SourceFileAttribute(ClassFile& clazz,UTF8String** str,std::ifstream& file):Attribute(str){
+SourceFileAttribute::SourceFileAttribute(ClassFile& clazz,UTF8String& str,std::ifstream& file):Attribute(str){
 	volatile unsigned int len=readU32(file);
-	tag=((UTF8String**)clazz.get(file));
+	//tag=((UTF8String**)clazz.get(file));
+	tag=cast<UTF8String>(clazz.constants[readU16(file)-1]);
 }
 
-CodeAttribute::CodeAttribute(ClassFile& clazz,UTF8String** str,std::ifstream& file):Attribute(name){
+CodeAttribute::CodeAttribute(ClassFile& clazz,UTF8String& str,std::ifstream& file):Attribute(str){
 	volatile unsigned int len=readU32(file);
 	maxStacks=readU16(file);
 	maxLocals=readU16(file);
@@ -63,4 +64,13 @@ ExceptionTable::ExceptionTable(std::ifstream& file){
 	endPC=readU16(file);
 	handlerPC=readU16(file);
 	catchType=readU16(file);
+}
+void IgnoredAttribute::print(std::ostream& os) const {
+	os<<"IGNORED("<<(std::string)name<<")";
+}
+void CodeAttribute::print(std::ostream& os) const {
+	os<<"Code("<<name<<")";
+}
+void SourceFileAttribute::print(std::ostream& os) const {
+	os<<"Source("<<*tag<<")";
 }

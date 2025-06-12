@@ -2,10 +2,8 @@
 #include "Attributes/Attribute.h"
 #include "Constants/Constants.h"
 #include "Utils/Utils.h"
-#include <iostream>
 #include <stack>
 #include <string>
-#include <strstream>
 #include <vector>
 #include "dlfcn.h"
 typedef void (*dllfunc)();
@@ -50,7 +48,6 @@ void run(ClassFile& clazz){
 	std::string name;
 
 	int op1,op2;
-
 	while(pc<data.size()){
 		int opcode=data[pc++];
 		StackFrame& frame=frames.top();
@@ -153,7 +150,7 @@ void run(ClassFile& clazz){
 				break;
 			case OPCODE::INVOKE_STATIC:
 				_data=COMBINE_BYTE(data[pc], data[pc+1])-1;
-				method=((MethodRef*)(clazz.constants[_data]));
+				method=cast<MethodRef>(clazz.constants[_data]);
 				class_name=*method->clazz->name;
 				name=method->name->getName();
 				if(name=="printInt"){

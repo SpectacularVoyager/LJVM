@@ -2,11 +2,10 @@
 #include <fstream>
 #include <ostream>
 #include "ConstantDefs.h"
-
+#include "Utils/Utils.h"
 #include "ClassFile/Classfile.h"
 
-template <typename T>
-T* cast(Constant* c);
+
 //INTERFACE
 class Constant{
 	public:
@@ -77,4 +76,30 @@ class FieldRef: public GenericRef{
 };
 namespace Constants{
 	Constant* getConstant(ClassFile& clazz,std::ifstream& file);
+}
+
+template <typename T>
+T* cast(Constant* c){
+#define IFCHECK(CLAZZ,TYPE) \
+	if(typeid(T)==typeid(CLAZZ)){		\
+		if(c->tag!=TYPE)PANIC("EXPECTED " #TYPE " GOT:"+std::to_string(c->tag));\
+	}
+#define CASE(CLAZZ,TYPE) case TYPE:\
+	if(typeid(T)==typeid(CLAZZ)){		\
+		if(c->tag!=TYPE)PANIC("EXPECTED " #TYPE " GOT:"+std::to_string(c->tag));\
+	}\
+	break
+
+	switch(c->tag){
+		CASE(ClassInfo,Constants::CLASS_INFO);
+		CASE(MethodRef, Constants::METHOD_REF);
+		CASE(FieldRef, Constants::FIELD_REF);
+		CASE(UTF8String, Constants::UTF8_STRING);
+		CASE(ConstantString, Constants::CONSTANT_STRING);
+		CASE(NameAndType, Constants::NAME_AND_TYPE);
+		default:
+			PANIC("INVALID TYPE:\t"+std::to_string(c->tag));
+	}
+	return (T*)c;
+#undef CASE
 }

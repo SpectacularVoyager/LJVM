@@ -58,10 +58,10 @@ int ClassFile::parse(std::ifstream& file){
 		//std::cout<<m.getName()<<std::endl;
 		methods.push_back(m);
 	}
-	readAll(file){
-		Attribute* a=Attributes::getAttribute(*this,file);
-		attributes.push_back(a);
-	}
+	// readAll(file){
+	// 	Attribute* a=Attributes::getAttribute(*this,file);
+	// 	attributes.push_back(a);
+	// }
 
 	// for(auto x:constants){
 	// 	std::cout<<*x<<"\n";

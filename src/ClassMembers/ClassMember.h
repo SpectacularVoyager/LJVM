@@ -11,8 +11,8 @@ class UTF8String;
 class ClassMember{
 	public:
 		int access;	
-		UTF8String** name;
-		UTF8String** desc;
+		UTF8String* name;
+		UTF8String* desc;
 		std::unordered_map<std::string,Attribute*> attributes;
 		ClassMember(ClassFile& clazz,std::ifstream& file);
 		~ClassMember();

@@ -4,31 +4,7 @@
 #include <map>
 #include <string>
 #include <typeinfo>
-template <typename T>
-T* cast(Constant* c){
-#define IFCHECK(CLAZZ,TYPE) \
-	if(typeid(T)==typeid(CLAZZ)){		\
-		if(c->tag!=TYPE)PANIC("EXPECTED " #TYPE " GOT:"+std::to_string(c->tag));\
-	}
-#define CASE(CLAZZ,TYPE) case TYPE:\
-	if(typeid(T)==typeid(CLAZZ)){		\
-		if(c->tag!=TYPE)PANIC("EXPECTED " #TYPE " GOT:"+std::to_string(c->tag));\
-	}\
-	break
 
-	switch(c->tag){
-		CASE(ClassInfo,Constants::CLASS_INFO);
-		CASE(MethodRef, Constants::METHOD_REF);
-		CASE(FieldRef, Constants::FIELD_REF);
-		CASE(UTF8String, Constants::UTF8_STRING);
-		CASE(ConstantString, Constants::CONSTANT_STRING);
-		CASE(NameAndType, Constants::NAME_AND_TYPE);
-		default:
-			PANIC("INVALID TYPE:\t"+std::to_string(c->tag));
-	}
-	return (T*)c;
-#undef CASE
-}
 void NameAndType::resolve(ClassFile& clazz) {
 	name=cast<UTF8String>(clazz.constants[name_index]);
 	type=cast<UTF8String>(clazz.constants[type_index]);
