@@ -1,3 +1,5 @@
+#pragma once
+
 namespace Constants{
 	const int UTF8_STRING=1;
 	const int CLASS_INFO=7;

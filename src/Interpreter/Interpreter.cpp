@@ -6,6 +6,7 @@
 #include <string>
 #include <vector>
 #include "dlfcn.h"
+#include "Arguments/Arguments.h"
 typedef void (*dllfunc)();
 
 #define PRINTF 
@@ -124,8 +125,10 @@ void run(ClassFile& clazz){
 			case OPCODE::RET:
 				PRINTF("RET\n");
 				//PUSH BYTE
-				if(frames.size()==1){
+				if(frames.size()<=1){
 					goto exit;
+				}else{
+					frames.pop();
 				}
 				break;
 			case OPCODE::LDC:
@@ -149,6 +152,7 @@ void run(ClassFile& clazz){
 				//std::cout<<"LOADING:\t"<<*clazz.constants[op1];
 				break;
 			case OPCODE::INVOKE_STATIC:
+				//CHECK NATIVE
 				_data=COMBINE_BYTE(data[pc], data[pc+1])-1;
 				method=cast<MethodRef>(clazz.constants[_data]);
 				class_name=*method->clazz->name;
@@ -157,9 +161,11 @@ void run(ClassFile& clazz){
 					printf("%d\n",frame.popInt());
 				}else{
 					//FIX BUG WHERE STACK IS NOT POPPED CORRECTLY
+					// for(auto x:getArgs(method->)){
+					//
+					// }
 					func=getFunction(handler, "Java_"+class_name+"_"+name);
 					func();
-					frame.popInt();
 				}
 				pc+=2;
 				break;

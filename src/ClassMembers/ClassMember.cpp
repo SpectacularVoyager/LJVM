@@ -1,8 +1,6 @@
 #include "ClassMember.h"
-#include "Attributes/Attribute.h"
-#include "ClassFile/Classfile.h"
+#include "Constants/Constants.h"
 #include "Utils/Utils.h"
-#include "Constants/ConstantDefs.h"
 #include <iostream>
 template <typename T>
 T* cast(Constant* c);
@@ -31,4 +29,10 @@ Attribute* ClassMember::getAttribute(std::string name){
 }
 UTF8String& ClassMember::getName(){
 	return *name;
+}
+void Field::print(std::ostream& os) const {
+	os<<"Field("<< *name<<") -> " << *desc;
+}
+void Method::print(std::ostream& os) const {
+	os<<"Method("<< *name<<") -> " << *desc;
 }

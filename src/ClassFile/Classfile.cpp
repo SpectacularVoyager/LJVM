@@ -5,6 +5,7 @@
 #include "ClassMembers/ClassMember.h"
 #include "Attributes/Attribute.h"
 #include "iostream"
+#include "Arguments/Arguments.h"
 
 #define readAll(file) for(unsigned int i=0,count=readU16(file);i<count;i++)
 
@@ -38,7 +39,7 @@ int ClassFile::parse(std::ifstream& file){
 	}
 	i=0;
 	for(auto x:constants){
-		std::cout<<i++<<" ( "<<*x<<" )\n";	
+		//std::cout<<i++<<" ( "<<*x<<" )\n";	
 	}
 	std::cout<<"\n\n";
 
@@ -58,14 +59,28 @@ int ClassFile::parse(std::ifstream& file){
 		//std::cout<<m.getName()<<std::endl;
 		methods.push_back(m);
 	}
-	// readAll(file){
-	// 	Attribute* a=Attributes::getAttribute(*this,file);
-	// 	attributes.push_back(a);
-	// }
+	readAll(file){
+		Attribute* a=Attributes::getAttribute(*this,file);
+		attributes.push_back(a);
+	}
 
-	// for(auto x:constants){
-	// 	std::cout<<*x<<"\n";
-	// }
+	for(auto x:fields){
+		std::cout<<x<<"\n";
+	}
+	for(auto x:methods){
+		auto p=getArgs(x.desc->str);
+		std::cout<<x<<"\t[";
+		for(auto d:p.first){
+			std::cout<<d<<",";
+		}
+		std::cout<<"] ->\t"<<p.second<<"\n";
+	}
+	for(auto x:attributes){
+		std::cout<<*x<<"\n";
+	}
+	for(auto x:constants){
+		//std::cout<<*x<<"\n";
+	}
 	return 1;
 }
 ClassFile::~ClassFile(){
