@@ -22,15 +22,15 @@ all:$(BUILD_OUTPUT) lib
 $(BUILD_OUTPUT): $(OBJECT_FILES)
 	@mkdir -p $(shell dirname $@)
 	@$(CXX) -o build/app $(OBJECT_FILES)
-	@echo "\033[0;34mBUILDING\033[0m" $@
+	@echo "\033[0;34mBUILDING\t\033[0m" $@
 
 $(OBJECT_FILES):out/%.o: src/%.cpp
 	@mkdir -p $(shell dirname $@)
 	@$(CXX) -c -o $@ $< -Isrc
-	@echo "\033[0;32mCOMPILING\033[0m" $<
+	@echo "\033[0;32mCOMPILING\t\033[0m" $<
 
 clean:
-	@echo "\033[0;33mCLEANING\033[0m"
+	@echo "\033[0;33mCLEANING\t\033[0m"
 	@rm -rf out build lib
 
 lib:$(LIBRARY_OUTPUT)

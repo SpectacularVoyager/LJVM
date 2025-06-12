@@ -95,7 +95,7 @@ inline void VirtualMachine::invokeStatic(StackFrame& frame,int){
 			auto o=frame.popGeneric();
 			if(o.type!=OPERANDS::STRING)PANIC("EXPECTED STRING GOT:"+std::to_string(o.type));
 			jstring* jstr=(jstring*)o.value;
-			printf("%s\n",jstr->str.c_str());
+			printf("%s",jstr->str.c_str());
 		}else{
 			std::cout<<name<<"\n";
 		}

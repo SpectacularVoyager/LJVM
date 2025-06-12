@@ -26,61 +26,18 @@ struct StackFrame{
 		std::vector<unsigned char> data;
 		unsigned int pc=0;
 		std::stack<Operand> operands;
-		StackFrame(std::vector<unsigned char> data):data(data){
-			//CHANGE THIS
-			LocalVariableArray=std::vector<long>(8);
-			PRINTF("NEW FRAME\n");
-			//hexdump(data);
-		}
-		void pushInt(int x){
-			pushGeneric({OPERANDS::INT,x});
-		}
-		int popInt(){
-			auto _x=popGeneric();
-			if(_x.type!=OPERANDS::INT)PANIC("EXPECTED INT GOT:"+std::to_string(_x.type));
-			return _x.value;
-		}
-		Operand popGeneric(){
-			auto x=operands.top();
-			operands.pop();
-			PRINTF(RED "POPPING [%ld]\n" RST,x.value);
-			return x;
-		}
-		void pushGeneric(Operand op){
-			operands.push(op);
-			PRINTF(GRN "PUSHING [%ld]\n" RST,op.value);
-		}
-		void pushGeneric(int type,long x){
-			pushGeneric({type,x});
-		}
-		inline void setRegisterLong(int index,long x){
-			PRINTF(YEL "SETTING REGISTER[%d] -> %ld\n",index,x);
-			if(index>=8)PANIC("TRYING TO SET REGISTER:"+std::to_string(index));
-			LocalVariableArray[index]=x;
-		}
-		inline long getRegisterLong(int index){
-			if(index>=8)PANIC("TRYING TO SET REGISTER:"+std::to_string(index));
-			return LocalVariableArray[index];
-		}
-		inline void setRegisterInt(int index,int x){
-			setRegisterLong(index,x);
-		}
-		inline int getRegisterInt(int index){
-			return (int)getRegisterLong(index);
-		}
-		inline void setRegister(int index,Operand x){
-			if(index>=8)PANIC("TRYING TO SET REGISTER:"+std::to_string(index));
-			switch(x.type){
-				case OPERANDS::INT:
-					setRegisterInt(index, x.value);
-					break;
-				default:PANIC("HANDLE FOR:\t"+std::to_string(x.type));
-			}
-		}
-		inline long getRegister(int index){
-			if(index>=8)PANIC("TRYING TO SET REGISTER:"+std::to_string(index));
-			return LocalVariableArray[index];
-		}
+		StackFrame(std::vector<unsigned char> data);
+		void pushInt(int x);
+		int popInt();
+		Operand popGeneric();
+		void pushGeneric(Operand op);
+		void pushGeneric(int type,long x);
+		void setRegisterLong(int index,long x);
+		long getRegisterLong(int index);
+		void setRegisterInt(int index,int x);
+		int getRegisterInt(int index);
+		void setRegister(int index,Operand x);
+		long getRegister(int index);
 
 };
 class VirtualMachine{
@@ -94,8 +51,7 @@ class VirtualMachine{
 			return getFrame().data[pc()++];
 		}
 		inline unsigned short readShort(){
-			unsigned short s= COMBINE_BYTE(getFrame().data[pc()], getFrame().data[pc()+1]);
-			pc()+=2;
+			unsigned short s= COMBINE_BYTE(readByte(),readByte());
 			return s;
 		}
 		ClassFile& getClass(std::string& name);
