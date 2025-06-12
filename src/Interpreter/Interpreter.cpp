@@ -42,7 +42,7 @@ void run(ClassFile& clazz){
 	hexdump(data);
 	int pc=0;
 	std::stack<StackFrame> frames;
-	frames.push(StackFrame());
+	frames.push(StackFrame(data));
 	long _data;
 	MethodRef* method;
 	std::string class_name;

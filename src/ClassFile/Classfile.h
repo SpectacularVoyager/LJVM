@@ -4,6 +4,7 @@
 #include <map>
 #include <unordered_map>
 #include <vector>
+#include "Access.h"
 #include "ClassMembers/ClassMember.h"
 
 class ClassInfo;
@@ -11,8 +12,6 @@ class Constant;
 class Attribute;
 
 
-struct ACCESS{
-};
 
 class ClassFile{
 
@@ -20,7 +19,7 @@ class ClassFile{
 		int major;
 		int minor;
 		std::vector<Constant*> constants;
-		int access;
+		ACCESS access;
 		ClassInfo* clazz;
 		ClassInfo* super;
 		std::vector<int> interfaces;
