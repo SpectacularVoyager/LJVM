@@ -4,23 +4,6 @@
 #include <map>
 #include <string>
 #include <typeinfo>
-
-//template <typename T>
-// T* cast(Constant* c){
-// #define IFCHECK(CLAZZ,TYPE) \
-// 	if(typeid(T)==typeid(CLAZZ)){		\
-// 		if(c->tag!=TYPE)PANIC("EXPECTED " #TYPE " GOT:"+std::to_string(c->tag));\
-// 	}
-// 	IFCHECK(ClassInfo,Constants::CLASS_INFO)
-// 	else IFCHECK(MethodRef, Constants::METHOD_REF)
-// 	else IFCHECK(FieldRef, Constants::FIELD_REF)
-// 	else IFCHECK(UTF8String, Constants::UTF8_STRING)
-// 	else IFCHECK(ConstantString, Constants::CONSTANT_STRING)
-// 	else IFCHECK(NameAndType, Constants::NAME_AND_TYPE)
-// 	else PANIC("INVALID TYPE:\t"+std::to_string(c->tag));
-// 	return (T*)c;
-// #undef IFCHECK
-// }
 template <typename T>
 T* cast(Constant* c){
 #define IFCHECK(CLAZZ,TYPE) \
