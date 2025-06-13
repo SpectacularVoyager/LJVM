@@ -98,6 +98,7 @@ inline void VirtualMachine::invokeVirtual(StackFrame& frame,int){
 	ClassFile& info=getClass(clazz_name);
 	Method* m=info.getMethod(method_name);
 	while(info.super&&!m){
+		m=info.getMethod(method_name);
 		if(info.clazz->getName()=="java/lang/Object")PANIC("METHOD NOT FOUND IN java/lang/Object");
 		std::string s=info.super->getName();
 		info=getClass(s);
