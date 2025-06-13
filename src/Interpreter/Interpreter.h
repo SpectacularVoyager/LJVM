@@ -12,6 +12,9 @@
 void run(ClassFile& file);
 #define PRINTF
 
+#define COLOR_CONST YEL
+#define COLOR_REG GRN
+
 struct Operand{
 	int type;
 	long value;
