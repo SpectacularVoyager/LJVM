@@ -26,11 +26,11 @@ std::function<Signature> VirtualMachine::fromDLL(){
 void VirtualMachine::reset(){
 	//std::cout<<frames.size()<<"\n";
 }
-VirtualMachine::VirtualMachine(std::vector<ClassFile>& classes,ClassFile& clazz,void* dllHandler)
+VirtualMachine::VirtualMachine(std::vector<ClassFile*>& classes,ClassFile& clazz,void* dllHandler)
 :classes(classes),main_clazz(clazz),dllHandler(dllHandler)
 {
-	for(ClassFile& f:classes){
-		classMap[f.clazz->getName()]=&f;
+	for(ClassFile* f:classes){
+		classMap[f->clazz->getName()]=f;
 	}
 }
 ClassFile& VirtualMachine::getClass(std::string& name){

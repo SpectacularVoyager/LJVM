@@ -17,8 +17,10 @@ class Attribute;
 
 
 class ClassFile{
+	ClassFile(ClassFile& f)=delete;
 
 	public:
+		ClassFile(){}
 		int major;
 		int minor;
 		std::vector<Constant*> constants;

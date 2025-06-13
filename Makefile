@@ -5,7 +5,7 @@ SRC_FILES=$(shell find -wholename "./src/*.cpp")
 
 OBJECT_FILES=$(SRC_FILES:./src/%.cpp=out/%.o)
 
-LIB_SRC=src/jni/jni.cpp
+LIB_SRC=$(shell find -wholename "./src/jni/*.cpp")
 
 LIB_OUT_FILES=$(LIB_SRC:./src/%.cpp=out/%.o)
 

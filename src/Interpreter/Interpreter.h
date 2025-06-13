@@ -47,7 +47,7 @@ struct StackFrame{
 };
 class VirtualMachine{
 		std::stack<StackFrame> frames;
-		std::vector<ClassFile>& classes;
+		std::vector<ClassFile*>& classes;
 		ClassFile& main_clazz;
 		void* dllHandler;
 		std::map<std::string,ClassFile*> classMap;
@@ -57,7 +57,7 @@ class VirtualMachine{
 
 		void callFunction(void* thiz,Method& m,StackFrame& frame,bool fromStack=0);
 	public:
-		VirtualMachine(std::vector<ClassFile>& classes,ClassFile& clazz,void* dllHandler);
+		VirtualMachine(std::vector<ClassFile*>& classes,ClassFile& clazz,void* dllHandler);
 		void reset();
 		int runMethod(std::string n);
 		StackFrame& getFrame(){return frames.top();}
