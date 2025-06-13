@@ -51,8 +51,17 @@ class CodeAttribute : public Attribute{
 		virtual void print(std::ostream& os) const override;
 };
 //TODO
-class LineNumberAttribute{
-	
+struct LineNumberTableEntry{
+	int startPC;
+	int lineNumber;
+};
+class LineNumberAttribute :public Attribute{
+	public:
+		UTF8String* name;
+		std::vector<LineNumberTableEntry> table;
+		LineNumberAttribute(ClassFile& clazz,UTF8String& str,std::ifstream& file);
+		virtual void print(std::ostream& os) const override;
+		std::string& getName();
 };
 namespace Attributes{
 	Attribute* getAttribute(ClassFile& clazz,std::ifstream& file);

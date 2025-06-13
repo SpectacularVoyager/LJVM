@@ -1,3 +1,4 @@
+#include "ClassFile/Classfile.h"
 #include "Access.h"
 #include <fstream>
 #include <ios>
@@ -7,6 +8,7 @@
 #include "Attributes/Attribute.h"
 #include "iostream"
 #include "Arguments/Arguments.h"
+#include "Objects/Objects.h"
 
 #define readAll(file) for(unsigned int i=0,count=readU16(file);i<count;i++)
 
@@ -50,8 +52,13 @@ int ClassFile::parse(std::ifstream& file){
 	std::cout<<"\n\n";
 
 	access=readU16(file);
-	clazz=(ClassInfo*)constants[readU16(file)-1];
-	super=(ClassInfo*)constants[readU16(file)-1];
+	clazz=cast<ClassInfo>(constants[readU16(file)-1]);
+	int _super=readU16(file);
+	if(_super==0){
+		super=cast<ClassInfo>(constants[_super-1]);
+	}else{
+		super=NULL;
+	}
 
 	readAll(file){
 		readU16(file);
@@ -71,7 +78,7 @@ int ClassFile::parse(std::ifstream& file){
 	}
 
 	for(auto x:fields){
-		// std::cout<<x.second<<"\n";
+		//std::cout<<*x.second<<"\n";
 	}
 	for(auto _x:methods){
 		// auto x=_x.second;
@@ -88,6 +95,7 @@ int ClassFile::parse(std::ifstream& file){
 	for(auto x:constants){
 		//std::cout<<*x<<"\n";
 	}
+	staticObject=new StaticObject(*this);
 	return 1;
 }
 ClassFile::~ClassFile(){
@@ -97,6 +105,7 @@ ClassFile::~ClassFile(){
 	for(auto x:attributes){
 		delete x;
 	}
+	delete staticObject;
 }
 
 

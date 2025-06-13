@@ -5,13 +5,17 @@
 namespace OPCODE{
 	const unsigned int BIPUSH=0x10;			//PUSH BYTE
 	const unsigned int ISTORE_N=0x3b;		//STORE INT
+	const unsigned int ASTORE_N=0x4b;		//STORE INT
 	const unsigned int ISTORE=0x36;			//STORE INT
 	const unsigned int ILOAD_N=0x1a;		//LOAD INT
+	const unsigned int ALOAD_N=0x2a;		//LOAD INT
 	const unsigned int ILOAD=0x15;			//LOAD INT
 	const unsigned int RET=0xb1;			//RET
 	const unsigned int IRET=0xac;			//RET
 	const unsigned int LDC=0x12;			//LOAD CONSTANT
 	const unsigned int INVOKE_STATIC=0xB8;	//INVOKE STATIC
+	const unsigned int INVOKE_SPECIAL=0xB7;	//INVOKE STATIC
+	const unsigned int INVOKE_VIRTUAL=0xB6;	//INVOKE STATIC
 	const unsigned int PUSH_INT_CONST=0x03;	//PUSH INT CONST [-1 -> 5]
 	const unsigned int IINC=0x84;			//INTEGER INCREMENT
 	const unsigned int GOTO=0xa7;			//GOTO
@@ -19,8 +23,18 @@ namespace OPCODE{
 	const unsigned int ISUB=0x64;			//GOTO
 	const unsigned int IMUL=0x68;			//GOTO
 											//
+	const unsigned int GET_STATIC=0xB2;	//INVOKE STATIC
+	const unsigned int PUT_STATIC=0xB3;	//INVOKE STATIC
+	const unsigned int GET_FIELD=0xB4;	//INVOKE STATIC
+	const unsigned int PUT_FIELD=0xB5;	//INVOKE STATIC
+											//
 	const unsigned int IF_CMP_GE=0xa2;
 	const unsigned int IF_CMP_GT=0xa3;
+
+	const unsigned int NEW=0xbb;
+
+	const unsigned int DUP=0x59;
+	const unsigned int POP=0x57;
 }
 static std::map<int, std::string> opcodes={
 	{0,"nop"},
@@ -110,6 +124,7 @@ static std::map<int, std::string> opcodes={
 	{84,"bastore"},
 	{85,"castore"},
 	{86,"sastore"},
+	{87,"pop"},
 	{88,"pop2"},
 	{89,"dup"},
 	{90,"dup_x1"},
@@ -199,6 +214,7 @@ static std::map<int, std::string> opcodes={
 	{175,"dreturn"},
 	{176,"areturn"},
 	{177,"return"},
+	{178,"getstatic"},
 	{179,"putstatic"},
 	{180,"getfield"},
 	{181,"putfield"},

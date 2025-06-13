@@ -67,6 +67,9 @@ void NameAndType::print(std::ostream& os) const{
 void ClassInfo::print(std::ostream& os) const{
 	os<<"Class("<<*name<<")";
 }
-void GenericRef::print(std::ostream& os) const{
+void MethodRef::print(std::ostream& os) const{
 	os<<"MethodRef("<<*(clazz->name)<<","<<*name<<")";
+}
+void FieldRef::print(std::ostream& os) const{
+	os<<"FieldRef("<<*(clazz->name)<<","<<*name<<")";
 }

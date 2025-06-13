@@ -66,17 +66,19 @@ class GenericRef : public Constant{
 		ClassInfo* clazz;
 		NameAndType* name;
 		GenericRef(ClassFile& clazz,std::ifstream& file);
-		virtual void print(std::ostream& os) const override;
+		virtual void print(std::ostream& os) const override = 0;
 		virtual void resolve(ClassFile& clazz) override; 
 };
 
 class MethodRef: public GenericRef{
 	public:
 		using GenericRef::GenericRef;
+		virtual void print(std::ostream& os) const override;
 };
 class FieldRef: public GenericRef{
 	public:
 		using GenericRef::GenericRef;
+		virtual void print(std::ostream& os) const override;
 };
 namespace Constants{
 	Constant* getConstant(ClassFile& clazz,std::ifstream& file);

@@ -6,6 +6,7 @@
 
 #include "ClassFile/Classfile.h"
 #include "Interpreter/Interpreter.h"
+#include "Constants/Constants.h"
 using std::ios;
 
 int main(int argc,char** argv){
@@ -25,7 +26,13 @@ int main(int argc,char** argv){
 	// 	PANIC("INVALID CLASS FILE\n");
 	// }
 	VirtualMachine machine(classes,classes[0],NULL);
-	machine.runMain();
+	for(auto c=classes.begin();c!=classes.end();c++){
+		//int res=machine.runMethod("<clinit>");
+		machine.reset();
+		//if(!res)std::cout<<"NO <clinit> in "<<*c->clazz<<"\n";
+	}
+	//std::cout<<machine.frames.size()<<"\n";
+	machine.runMethod("main");
 	//run(clazz);
 
 }

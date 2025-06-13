@@ -7,6 +7,9 @@
 #include "Access.h"
 #include "ClassMembers/ClassMember.h"
 
+
+class StaticObject;
+
 class ClassInfo;
 class Constant;
 class Attribute;
@@ -26,6 +29,8 @@ class ClassFile{
 		std::map<std::string,Field*> fields;
 		std::map<std::string,Method*> methods;
 		std::vector<Attribute*> attributes;
+
+		StaticObject* staticObject;
 
 		int parse(const std::string& file_name);
 		int parse(std::ifstream& file);

@@ -1,4 +1,7 @@
 #include "Interpreter.h"
+#include <iostream>
+
+#define PRINTF 
 StackFrame::StackFrame(std::vector<unsigned char> data):data(data){
 	//CHANGE THIS
 	LocalVariableArray=std::vector<long>(8);
@@ -16,12 +19,12 @@ int StackFrame::popInt(){
 Operand StackFrame::popGeneric(){
 	auto x=operands.top();
 	operands.pop();
-	PRINTF(RED "POPPING [%ld]\n" RST,x.value);
+	PRINTF(RED "POPPING %d[%ld]\n" RST,x.type,x.value);
 	return x;
 }
 void StackFrame::pushGeneric(Operand op){
 	operands.push(op);
-	PRINTF(GRN "PUSHING [%ld]\n" RST,op.value);
+	PRINTF(GRN "PUSHING %d[%ld]\n" RST,op.type,op.value);
 }
 void StackFrame::pushGeneric(int type,long x){
 	pushGeneric({type,x});
@@ -46,6 +49,9 @@ void StackFrame::setRegister(int index,Operand x){
 	switch(x.type){
 		case OPERANDS::INT:
 			setRegisterInt(index, x.value);
+			break;
+		case OPERANDS::OBJECT_REF:
+			setRegisterLong(index,x.value);
 			break;
 		default:PANIC("HANDLE FOR:\t"+std::to_string(x.type));
 	}

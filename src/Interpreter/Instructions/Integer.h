@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Interpreter/Interpreter.h"
+#include <string>
 
 //INTEGER
 inline void VirtualMachine::ILOAD(StackFrame& frame,int){
@@ -49,6 +50,18 @@ inline void VirtualMachine::ILOAD_N(StackFrame& frame,int opcode){
 	int val=frame.getRegisterInt(opcode-OPCODE::ILOAD_N);
 	frame.pushInt(val);
 	PRINTF("LOADING " COLOR_CONST "%d " RST " FROM " COLOR_REG "REG[%d]" RST "\n",val,opcode-OPCODE::ILOAD_N);
+}
+inline void VirtualMachine::ALOAD_N(StackFrame& frame,int opcode){
+	long val=frame.getRegister(opcode-OPCODE::ALOAD_N);
+	frame.pushGeneric({OPERANDS::OBJECT_REF,val});
+	PRINTF("LOADING " COLOR_CONST "%ld " RST " FROM " COLOR_REG "REG[%d]" RST "\n",val,opcode-OPCODE::ALOAD_N);
+}
+inline void VirtualMachine::ASTORE_N(StackFrame& frame,int opcode){
+	PRINTF("OPCODE:%d\n",opcode-OPCODE::ASTORE_N);
+	auto val=frame.popGeneric();
+	if(val.type!=OPERANDS::OBJECT_REF)PANIC("EXPECTED OBJECT_REF GOT:\t"+std::to_string(val.type));
+	PRINTF("STORING " COLOR_CONST "%ld " RST " IN " COLOR_REG "REG[%d]" RST "\n",val,opcode-OPCODE::ASTORE_N);
+	frame.setRegister(opcode-OPCODE::ASTORE_N,val);
 }
 inline void VirtualMachine::ICONST_N(StackFrame& frame,int opcode){
 	PRINTF("CONST INT " COLOR_CONST "%d" RST "\n",(int)opcode-(int)OPCODE::PUSH_INT_CONST);

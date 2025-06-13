@@ -10,7 +10,6 @@
 #include "Arguments/Arguments.h"
 typedef void (*dllfunc)();
 
-#define PRINTF 
 dllfunc getFunction(void* handler,std::string symbol){
 	char* error;
 	auto* object = (long*)dlsym(handler, symbol.c_str());

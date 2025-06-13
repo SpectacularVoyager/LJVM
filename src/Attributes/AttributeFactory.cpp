@@ -17,7 +17,7 @@ Attribute* Attributes::getAttribute(ClassFile& clazz,std::ifstream& file){
 	}else if((std::string)a=="StackMapTable"){
 		attr= new IgnoredAttribute(clazz,a,file);
 	}else if((std::string)a=="LineNumberTable"){
-		attr= new IgnoredAttribute(clazz,a,file);
+		attr= new LineNumberAttribute(clazz,a,file);
 	}else{
 		PANIC("UNIMPLEMENTED ATTRIBUTE:"+(std::string)a);
 	}
@@ -65,6 +65,16 @@ ExceptionTable::ExceptionTable(std::ifstream& file){
 	handlerPC=readU16(file);
 	catchType=readU16(file);
 }
+LineNumberAttribute::LineNumberAttribute(ClassFile&,UTF8String& str,std::ifstream& file):Attribute(str){
+	unsigned int _=readU32(file);
+	unsigned int entries=readU16(file);
+	for(size_t i=0;i<entries;i++){
+		table.push_back({readU16(file),readU16(file)});
+	}
+}
+std::string& LineNumberAttribute::getName(){
+	return name->str;
+}
 void IgnoredAttribute::print(std::ostream& os) const {
 	os<<"IGNORED("<<(std::string)name<<")";
 }
@@ -73,4 +83,7 @@ void CodeAttribute::print(std::ostream& os) const {
 }
 void SourceFileAttribute::print(std::ostream& os) const {
 	os<<"Source("<<*tag<<")";
+}
+void LineNumberAttribute::print(std::ostream& os) const {
+	os<<"Lines("<<*name<<")";
 }

@@ -10,18 +10,22 @@
 #include <functional>
 #include <iostream>
 #include <string>
+#include <vector>
 #include "dlfcn.h"
 #include "Instructions/Compare.h"
 #include "Instructions/Const.h"
 #include "Instructions/Flow.h"
 #include "Instructions/Integer.h"
 #include "Instructions/References.h"
+#include "Instructions/Stack.h"
 
 template<typename Signature>
 std::function<Signature> VirtualMachine::fromDLL(){
 
 }
-
+void VirtualMachine::reset(){
+	//std::cout<<frames.size()<<"\n";
+}
 VirtualMachine::VirtualMachine(std::vector<ClassFile>& classes,ClassFile& clazz,void* dllHandler)
 :classes(classes),main_clazz(clazz),dllHandler(dllHandler)
 {
@@ -34,23 +38,24 @@ ClassFile& VirtualMachine::getClass(std::string& name){
 	if(x==classMap.end())PANIC("COULD NOT FIND CLASS:\t"+name);
 	return *x->second;
 }
-#define PRINTF
-void VirtualMachine::runMain(){
-	std::string __MAIN="main";
-	auto code = (CodeAttribute*)main_clazz.getMethod(__MAIN)->getAttribute("Code");
+int VirtualMachine::runMethod(std::string n){
+	auto m=main_clazz.getMethod(n);
+	if(!m)return 0;
+	auto code = (CodeAttribute*)m->getAttribute("Code");
 	if(code==NULL)PANIC("NO CODE FOUND");
 	std::vector<unsigned char> data=code->code;
+	hexdump(data);
 
 #define CASE(NAME,INST) case NAME: \
 	INST;break;
 	frames.push(StackFrame(data));
 	while(pc()<data.size()){
+	int retcode=0;
 		unsigned char opcode=readByte();
-		//printf("%d\n",opcode);
+		PRINTF("INST:%s\n",opcodes[opcode].c_str());
 		StackFrame& frame=getFrame();
 		switch(opcode){
 			CASE(OPCODE::LDC,LDC(frame));
-			CASE(OPCODE::INVOKE_STATIC,invokeStatic(frame));
 			CASE(OPCODE::BIPUSH,BIPUSH(frame));
 			CASE(OPCODE::ISTORE,ISTORE(frame));
 			CASE(OPCODE::IADD,IADD(frame));
@@ -59,12 +64,24 @@ void VirtualMachine::runMain(){
 			CASE(OPCODE::ILOAD,ILOAD(frame));
 			CASE(OPCODE::IINC,IINC(frame));
 
-			CASE(OPCODE::RET,RET(frame));
-			CASE(OPCODE::IRET,IRET(frame));
+			CASE(OPCODE::RET,retcode=RET(frame));
+			CASE(OPCODE::IRET,retcode=IRET(frame));
 			CASE(OPCODE::GOTO,GOTO(frame));
 
 			CASE(OPCODE::IF_CMP_GE,IF_CMP_GE(frame));
 			CASE(OPCODE::IF_CMP_GT,IF_CMP_GT(frame));
+
+			CASE(OPCODE::DUP,dup(frame));
+			CASE(OPCODE::POP,POP(frame));
+
+			CASE(OPCODE::PUT_STATIC,putStatic(frame));
+			CASE(OPCODE::GET_STATIC,getStatic(frame));
+			CASE(OPCODE::PUT_FIELD,putField(frame));
+			CASE(OPCODE::GET_FIELD,getField(frame));
+			CASE(OPCODE::INVOKE_STATIC,invokeStatic(frame));
+			CASE(OPCODE::INVOKE_SPECIAL,invokeSpecial(frame));
+			CASE(OPCODE::INVOKE_VIRTUAL,invokeVirtual(frame));
+			CASE(OPCODE::NEW,NEW(frame));
 				
 			case OPCODE::ISTORE_N:
 			case OPCODE::ISTORE_N+1:
@@ -88,10 +105,26 @@ void VirtualMachine::runMain(){
 			case OPCODE::PUSH_INT_CONST+5:
 				ICONST_N(frame,opcode);
 				break;
+
+			case OPCODE::ALOAD_N:
+			case OPCODE::ALOAD_N+1:
+			case OPCODE::ALOAD_N+2:
+			case OPCODE::ALOAD_N+3:
+				//FROM STACK TOP
+				ALOAD_N(frame,opcode);
+				break;
+			case OPCODE::ASTORE_N:
+			case OPCODE::ASTORE_N+1:
+			case OPCODE::ASTORE_N+2:
+			case OPCODE::ASTORE_N+3:
+				ASTORE_N(frame,opcode);
+				break;
 			default:
 				PANIC("UNSUPORTED OPCODE:\t"+opcodes[opcode]+" ["+std::to_string(opcode)+"]");
 		}
 	}
+	frames.pop();
+	return 1;
 #undef CASE
 }
 #define COLOR_CONST YEL
