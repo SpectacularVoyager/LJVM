@@ -34,7 +34,7 @@ void readTag(std::ifstream& file){
 int readClass(std::ifstream& file){
 	printf("MAGIC:\t\t0x%x\n",readU32(file));
 	printf("VERSION:\t%d:%d\n",readU16(file),readU16(file));
-	int constants=readU16(file);
+	unsigned int constants=readU16(file);
 	printf("CONSTANTS:\t%d\n",constants);
 	for(size_t i=0;i<constants-1;i++){
 		readTag(file);

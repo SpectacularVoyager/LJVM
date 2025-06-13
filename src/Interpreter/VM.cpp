@@ -7,13 +7,27 @@
 
 #include"jni/jni.h"
 
+#include <functional>
 #include <iostream>
 #include <string>
+#include "dlfcn.h"
 
+template<typename Signature>
+std::function<Signature> VirtualMachine::fromDLL(){
 
+}
+
+VirtualMachine::VirtualMachine(std::vector<ClassFile>& classes,ClassFile& clazz,void* dllHandler)
+:classes(classes),main_clazz(clazz),dllHandler(dllHandler)
+{
+	for(ClassFile& f:classes){
+		classMap[f.clazz->getName()]=&f;
+	}
+}
 ClassFile& VirtualMachine::getClass(std::string& name){
-	if(main_clazz.clazz->getName()==name)return main_clazz;
-	PANIC("COULD NOT FIND CLASS:\t"+name);
+	auto x=classMap.find(name);
+	if(x==classMap.end())PANIC("COULD NOT FIND CLASS:\t"+name);
+	return *x->second;
 }
 #define PRINTF
 void VirtualMachine::runMain(){

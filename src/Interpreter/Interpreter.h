@@ -2,6 +2,7 @@
 #include "ClassFile/Classfile.h"
 
 #include "Opcode.h"
+#include <functional>
 #include <ostream>
 #include <stack>
 #include <string>
@@ -41,9 +42,16 @@ struct StackFrame{
 
 };
 class VirtualMachine{
-		ClassFile& main_clazz;
 		std::stack<StackFrame> frames;
+		std::vector<ClassFile>& classes;
+		ClassFile& main_clazz;
+		void* dllHandler;
+		std::map<std::string,ClassFile*> classMap;
+
+		template<typename Signature>
+		std::function<Signature> fromDLL();
 	public:
+		VirtualMachine(std::vector<ClassFile>& classes,ClassFile& clazz,void* dllHandler);
 		void runMain();
 		StackFrame& getFrame(){return frames.top();}
 		unsigned int& pc(){return getFrame().pc;}
@@ -55,7 +63,6 @@ class VirtualMachine{
 			return s;
 		}
 		ClassFile& getClass(std::string& name);
-		VirtualMachine(ClassFile& clazz):main_clazz(clazz){}
 
 		inline void LDC(StackFrame& frame,int opcode=OPCODE::LDC);
 		inline void invokeStatic(StackFrame& frame,int opcode=OPCODE::INVOKE_STATIC);

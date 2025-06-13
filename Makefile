@@ -1,4 +1,5 @@
 CXX=g++
+CFLAGS=-Wall -Wno-unused
 
 SRC_FILES=$(shell find -wholename "./src/*.cpp")
 
@@ -21,12 +22,12 @@ all:$(BUILD_OUTPUT) lib
 
 $(BUILD_OUTPUT): $(OBJECT_FILES)
 	@mkdir -p $(shell dirname $@)
-	@$(CXX) -o build/app $(OBJECT_FILES)
+	@$(CXX) $(CFLAGS) -o build/app $(OBJECT_FILES)
 	@echo "\033[0;34mBUILDING\t\033[0m" $@
 
 $(OBJECT_FILES):out/%.o: src/%.cpp
 	@mkdir -p $(shell dirname $@)
-	@$(CXX) -c -o $@ $< -Isrc
+	@$(CXX) $(CFLAGS) -c -o $@ $< -Isrc
 	@echo "\033[0;32mCOMPILING\t\033[0m" $<
 
 clean:
@@ -37,5 +38,5 @@ lib:$(LIBRARY_OUTPUT)
 
 $(LIBRARY_OUTPUT): $(LIB_OUT_FILES)
 	@mkdir -p $(shell dirname $@)
-	@$(CXX) -fpic -shared -o $(LIBRARY_OUTPUT) $(LIB_OUT_FILES)
+	@$(CXX) $(CFLAGS) -fpic -shared -o $(LIBRARY_OUTPUT) $(LIB_OUT_FILES)
 	@echo "\033[0;36mCREATING LIBRARY\033[0m" $@

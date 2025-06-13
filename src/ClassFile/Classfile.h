@@ -27,6 +27,7 @@ class ClassFile{
 		std::map<std::string,Method*> methods;
 		std::vector<Attribute*> attributes;
 
+		int parse(const std::string& file_name);
 		int parse(std::ifstream& file);
 		Constant* get(std::ifstream& file);
 		~ClassFile();

@@ -10,6 +10,7 @@ class Attribute{
 		UTF8String& name;
 		std::string getName();
 		Attribute(UTF8String& name):name(name){}
+		virtual ~Attribute() = default;
 		virtual void print(std::ostream& os) const = 0;
 		friend std::ostream& operator<<(std::ostream& os, const Attribute& val){
 			val.print(os);

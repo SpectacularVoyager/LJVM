@@ -13,6 +13,7 @@ class Constant{
 		friend std::ostream& operator<<(std::ostream& os, const Constant& val);
 		virtual void print(std::ostream& os) const = 0;
 		virtual void resolve(ClassFile& clazz) = 0;
+		virtual ~Constant() = default;
 };
 
 class UTF8String : public Constant{

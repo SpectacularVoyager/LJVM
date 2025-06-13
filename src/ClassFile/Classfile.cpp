@@ -1,5 +1,6 @@
 #include "Access.h"
 #include <fstream>
+#include <ios>
 #include "Utils/Utils.h"
 #include "Constants/Constants.h"
 #include "ClassMembers/ClassMember.h"
@@ -9,11 +10,16 @@
 
 #define readAll(file) for(unsigned int i=0,count=readU16(file);i<count;i++)
 
+using std::ios;
 Constant* ClassFile::get(std::ifstream& file){
 	int idx=readU16(file)-1;
 	return constants[idx];
 }
 
+int ClassFile::parse(const std::string& file_name){
+	auto x= std::ifstream(file_name,ios::binary|ios::in);
+	return parse(x);
+}
 int ClassFile::parse(std::ifstream& file){
 	unsigned int magic=readU32(file);	
 	if(magic!=0xCAFEBABE){
@@ -39,7 +45,7 @@ int ClassFile::parse(std::ifstream& file){
 	}
 	i=0;
 	for(auto x:constants){
-		//std::cout<<i++<<" ( "<<*x<<" )\n";	
+		// std::cout<<i++<<" ( "<<*x<<" )\n";	
 	}
 	std::cout<<"\n\n";
 

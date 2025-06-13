@@ -40,7 +40,7 @@ void run(ClassFile& clazz){
 	data=code->code;
 
 	hexdump(data);
-	int pc=0;
+	unsigned int pc=0;
 	std::stack<StackFrame> frames;
 	frames.push(StackFrame(data));
 	long _data;
